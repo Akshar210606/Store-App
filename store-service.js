@@ -27,6 +27,7 @@ module.exports.initialize = function() {
     });
 };
 
+<<<<<<< HEAD
 // Function to add a new item to the items array
 module.exports.addItem = function(itemData) {
     return new Promise((resolve, reject) => {
@@ -44,6 +45,8 @@ module.exports.addItem = function(itemData) {
     });
 };
 
+=======
+>>>>>>> edce93c71e8a8c564f5fd8c0cd767de2b92ef99a
 // Export additional methods
 module.exports.getAllItems = function() {
     return new Promise((resolve, reject) => {
@@ -72,6 +75,7 @@ module.exports.getCategories = function() {
         resolve(categories); // Resolve with categories array
     });
 };
+<<<<<<< HEAD
 
 // Function to get items by category
 module.exports.getItemsByCategory = function(category) {
@@ -110,3 +114,5 @@ module.exports.getItemById = function(id) {
 };
 
 
+=======
+>>>>>>> edce93c71e8a8c564f5fd8c0cd767de2b92ef99a
