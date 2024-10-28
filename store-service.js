@@ -27,6 +27,23 @@ module.exports.initialize = function() {
     });
 };
 
+// Function to add a new item to the items array
+module.exports.addItem = function(itemData) {
+    return new Promise((resolve, reject) => {
+        // Set published to true if defined, otherwise set to false
+        itemData.published = itemData.published !== undefined;
+
+        // Assign a unique id based on the current length of the items array
+        itemData.id = items.length + 1;
+
+        // Add the item to the items array
+        items.push(itemData);
+
+        // Resolve the promise with the new item data
+        resolve(itemData);
+    });
+};
+
 // Export additional methods
 module.exports.getAllItems = function() {
     return new Promise((resolve, reject) => {
@@ -55,3 +72,41 @@ module.exports.getCategories = function() {
         resolve(categories); // Resolve with categories array
     });
 };
+
+// Function to get items by category
+module.exports.getItemsByCategory = function(category) {
+    return new Promise((resolve, reject) => {
+        const filteredItems = items.filter(item => item.category === parseInt(category));
+        if (filteredItems.length === 0) {
+            return reject('No results returned'); // Reject if no items found for the category
+        } else {
+            resolve(filteredItems); // Resolve with filtered items
+        }
+    });
+};
+
+// Function to get items by minimum date
+module.exports.getItemsByMinDate = function(minDateStr) {
+    return new Promise((resolve, reject) => {
+        const minDate = new Date(minDateStr);
+        const filteredItems = items.filter(item => new Date(item.postDate) >= minDate);
+        if (filteredItems.length === 0) {
+            return reject('No results returned'); // Reject if no items found for the date filter
+        } else {
+            resolve(filteredItems);
+        }
+    });
+};
+
+module.exports.getItemById = function(id) {
+    return new Promise((resolve, reject) => {
+        const item = items.find(item => item.id === parseInt(id));
+        if (!item) {
+            return reject('Item not found'); // Reject if no item matches the id
+        } else {
+            resolve(item);
+        }
+    });
+};
+
+
