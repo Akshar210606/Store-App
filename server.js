@@ -13,6 +13,8 @@ GitHub Repository URL: https://github.com/Akshar2106/web322-app.git
 
 ********************************************************************************/
 
+require('dotenv').config(); // Load environment variables at the very top
+
 const express = require('express');
 const path = require('path');
 const multer = require('multer');
@@ -29,20 +31,16 @@ const {
     getItemById 
 } = require('./store-service'); 
 
-// Load environment variables
-require('dotenv').config();
-
 const app = express();
+const upload = multer(); // Initialize multer for handling file uploads
 
-// Cloudinary configuration
+// Configure Cloudinary with environment variables
 cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME=doszlj5lf,
-    api_key: process.env.CLOUDINARY_API_KEY=158569399984422,
-    api_secret: process.env.CLOUDINARY_API_SECRET=kblJGJxkoZvA3QLt_WP1H6xvTxo,
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
     secure: true
 });
-
-const upload = multer(); // Set up multer without disk storage
 
 // Serve static files from the "public" folder
 app.use(express.static('public'));
