@@ -8,7 +8,7 @@ distributed to other students.
 Name: Aksharkumar Anilkumar Patel
 Student ID: 137902235
 Date: 07/10/2024
-Cyclic Web App URL: https://replit.com/@aapatel67/web322-app-
+Cyclic Web App URL: https://replit.com/@aapatel67/web322-app#cloudinary.env
 GitHub Repository URL: https://github.com/Akshar2106/web322-app.git
 
 ********************************************************************************/
