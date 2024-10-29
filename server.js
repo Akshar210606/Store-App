@@ -36,9 +36,9 @@ const app = express();
 
 // Cloudinary configuration
 cloudinary.config({
-    cloud_name: process.env.doszlj5lf,
-    api_key: process.env.158569399984422,
-    api_secret: process.env.kblJGJxkoZvA3QLt_WP1H6xvTxo,
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME=doszlj5lf,
+    api_key: process.env.CLOUDINARY_API_KEY=158569399984422,
+    api_secret: process.env.CLOUDINARY_API_SECRET=kblJGJxkoZvA3QLt_WP1H6xvTxo,
     secure: true
 });
 
