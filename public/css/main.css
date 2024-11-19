@@ -21,4 +21,6 @@ h1, h2, h3 {
     color: #007BFF; /* Change color on hover */
 }
 
-/* Additional styles for buttons, cards, etc. */
+.nav-item .active {
+    font-weight: bold;
+}
