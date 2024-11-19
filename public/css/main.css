@@ -1,26 +1,26 @@
 
 body {
     font-family: 'Roboto', sans-serif; 
-    background-color: #f4f4f4; /* Light background */
+    background-color: #f4f4f4; 
     color: #333; /* Dark text color */
 }
 
 h1, h2, h3 {
-    color: #007BFF; /* Bootstrap Primary Color */
-}
+    color: #007BFF; 
 
 .navbar {
-    background-color: #343a40; /* Dark background for navbar */
+    background-color: #343a40; 
 }
 
 .navbar-nav .nav-link {
-    color: #fff; /* White text for navbar links */
+    color: #fff; 
 }
 
 .navbar-nav .nav-link:hover {
-    color: #007BFF; /* Change color on hover */
+    color: #007BFF; 
 }
 
 .nav-item .active {
     font-weight: bold;
+}
 }

@@ -1,14 +1,9 @@
-// store-service.js
-
 const path = require('path');
-const items = require(path.join(__dirname, 'data', 'items.json')); // updated path to include 'data' folder
-const categories = require(path.join(__dirname, 'data', 'categories.json')); // correct path for categories.json
+const items = require(path.join(__dirname, 'data', 'items.json')); 
+const categories = require(path.join(__dirname, 'data', 'categories.json')); 
 
 function initialize() {
   return new Promise((resolve, reject) => {
-    // Initialization logic if needed
-    // If there's any async loading that needs to be done (e.g., reading from a database)
-    // Otherwise, just resolve the promise
     resolve();
   });
 }
@@ -18,7 +13,7 @@ module.exports = {
   getPublishedItems() {
     return new Promise((resolve, reject) => {
       const publishedItems = items.filter(item => item.published);
-      console.log('Published Items:', publishedItems); // Log to see the filtered items
+      console.log('Published Items:', publishedItems); 
       if (publishedItems.length > 0) {
         resolve(publishedItems);
       } else {
@@ -65,11 +60,9 @@ module.exports = {
   addItem(item) {
     return new Promise((resolve, reject) => {
       try {
-        // Assign current date as postDate in YYYY-MM-DD format
         const currentDate = new Date();
         item.postDate = currentDate.toISOString().split('T')[0];
   
-        // Ensure all necessary properties are provided
         if (!item.title || !item.body || !item.price || !item.featureImage || !item.category) {
           return reject("Missing required fields");
         }
