@@ -1,35 +1,31 @@
 <div class="row">
     <div class="col-md-12">
-        <h2>Categories</h2>
-        <hr />
-        <div class="table-responsive">
+        <h2>Categories
+            <a href="/categories/add" class="btn btn-success pull-right">Add Category</a>
+        </h2>
+        {{#if message}}
+            <div class="alert alert-danger">{{message}}</div>
+        {{else}}
             <table class="table">
                 <thead>
                     <tr>
                         <th>Category ID</th>
                         <th>Category Name</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {{#if categories}}
-                        {{#each categories}}
-                            <tr>
-                                <td><a href="/shop?category={{this.id}}">{{this.id}}</a></td>
-                                <td><a href="/shop?category={{this.id}}">{{this.category}}</a></td>
-                            </tr>
-                        {{/each}}
-                    {{else}}
+                    {{#each categories}}
                         <tr>
-                            <td colspan="2">No categories available.</td>
+                            <td>{{id}}</td>
+                            <td>{{category}}</td>
+                            <td>
+                                <a href="/categories/delete/{{id}}" class="btn btn-danger">remove</a>
+                            </td>
                         </tr>
-                    {{/if}}
+                    {{/each}}
                 </tbody>
             </table>
-        </div>
-        {{#if message}}
-            <div class="col-md-12 text-center">
-                <strong>{{message}}</strong>
-            </div>
         {{/if}}
     </div>
 </div>

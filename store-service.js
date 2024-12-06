@@ -1,77 +1,170 @@
-const path = require('path');
-const items = require(path.join(__dirname, 'data', 'items.json')); 
-const categories = require(path.join(__dirname, 'data', 'categories.json')); 
+const Sequelize = require('sequelize');
 
-function initialize() {
-  return new Promise((resolve, reject) => {
-    resolve();
-  });
-}
+var sequelize = new Sequelize('postgresql://senecaDB_owner:orNLq0El3Zdz@ep-wild-smoke-a5n8x2qg.us-east-2.aws.neon.tech/senecaDB', {
+    dialect: 'postgres',
+    dialectOptions: {
+        ssl: {
+            require: true,
+            rejectUnauthorized: false
+        }
+    }
+});
+
+const Category = sequelize.define('Category', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    category: Sequelize.STRING
+});
+
+const Item = sequelize.define('Item', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    body: Sequelize.TEXT,
+    title: Sequelize.STRING,
+    postDate: Sequelize.DATE,
+    featureImage: Sequelize.STRING,
+    published: Sequelize.BOOLEAN,
+    price: Sequelize.DOUBLE,
+    category: Sequelize.INTEGER
+});
+
+Item.belongsTo(Category, {foreignKey: 'category'});
 
 module.exports = {
-  initialize,
-  getPublishedItems() {
-    return new Promise((resolve, reject) => {
-      const publishedItems = items.filter(item => item.published);
-      console.log('Published Items:', publishedItems); 
-      if (publishedItems.length > 0) {
-        resolve(publishedItems);
-      } else {
-        reject("no results");
-      }
-    });
-  },
-  
+    initialize: function() {
+        return new Promise((resolve, reject) => {
+            sequelize.sync()
+                .then(() => {
+                    resolve();
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    },
 
-  getPublishedItemsByCategory(category) {
-    return new Promise((resolve, reject) => {
-      const filteredItems = items.filter(
-        item => item.published && item.category == category
-      );
-      if (filteredItems.length > 0) {
-        resolve(filteredItems);
-      } else {
-        reject("no results");
-      }
-    });
-  },
+    getCategories: function() {
+        return new Promise((resolve, reject) => {
+            Category.findAll()
+                .then((data) => {
+                    const categories = data.map(category => category.get({ plain: true }));
+                    resolve(categories);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    },
 
-  getCategories() {
-    return new Promise((resolve, reject) => {
-      if (categories.length > 0) {
-        resolve(categories);
-      } else {
-        reject("no results");
-      }
-    });
-  },
+    addCategory: function(categoryData) {
+        return new Promise((resolve, reject) => {
+            Category.create(categoryData)
+                .then(() => {
+                    resolve();
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    },
 
-  getItemById(id) {
-    return new Promise((resolve, reject) => {
-      const item = items.find(item => item.id == id);
-      if (item) {
-        resolve(item);
-      } else {
-        reject("no results");
-      }
-    });
-  },
+    deleteCategoryById: function(id) {
+        return new Promise((resolve, reject) => {
+            Category.destroy({
+                where: {
+                    id: id
+                }
+            })
+            .then(() => {
+                resolve();
+            })
+            .catch((err) => {
+                reject(err);
+            });
+        });
+    },
 
-  addItem(item) {
-    return new Promise((resolve, reject) => {
-      try {
-        const currentDate = new Date();
-        item.postDate = currentDate.toISOString().split('T')[0];
-  
-        if (!item.title || !item.body || !item.price || !item.featureImage || !item.category) {
-          return reject("Missing required fields");
-        }
-  
-        items.push(item);
-        resolve(item);
-      } catch (err) {
-        reject("Unable to add item");
-      }
-    });
-  }
+    addItem: function(itemData) {
+        return new Promise((resolve, reject) => {
+            itemData.published = itemData.published ? true : false;
+            itemData.postDate = new Date();
+            
+            Item.create(itemData)
+                .then(() => {
+                    resolve();
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    },
+
+    getAllItems: function() {
+        return Item.findAll({
+            include: [{ model: Category }]
+        })
+        .then(data => data.map(item => item.get({ plain: true })))
+        .catch(err => Promise.reject("Error retrieving items"));
+    },
+
+    getItemById: function(id) {
+        return new Promise((resolve, reject) => {
+            Item.findOne({
+                where: {
+                    id: id
+                },
+                include: [{ model: Category }]
+            })
+            .then((data) => {
+                if (data) {
+                    resolve(data.get({ plain: true }));
+                } else {
+                    reject("No results found");
+                }
+            })
+            .catch((err) => {
+                reject(err);
+            });
+        });
+    },
+
+    deleteItemById: function(id) {
+        return new Promise((resolve, reject) => {
+            Item.destroy({
+                where: {
+                    id: id
+                }
+            })
+            .then(() => {
+                resolve();
+            })
+            .catch((err) => {
+                reject(err);
+            });
+        });
+    },
+
+    getPublishedItems: function() {
+        return new Promise((resolve, reject) => {
+            Item.findAll({
+                where: {
+                    published: true
+                },
+                include: [{ model: Category }]
+            })
+            .then((data) => {
+                const items = data.map(item => item.get({ plain: true }));
+                resolve(items);
+            })
+            .catch((err) => {
+                reject(err);
+            });
+        });
+    }
 };
