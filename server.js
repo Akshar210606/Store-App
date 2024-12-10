@@ -1,9 +1,9 @@
 /************************************************************* 
- * WEB 322 - ASSIGNMENT 4
+ * WEB 322 - ASSIGNMENT 6
  * Name: Aksharkumar Anilkumar Patel
  * Student Id: 137902235
- * Date: 18/11/2024
- * Replit URL: https://a3b90235-cd62-4f56-834e-32ca4b798bf2-00-3kh0kkqiu322y.worf.repl.co/
+ * Date: 10/12/2024
+ * Replit URL:
  * Github link: https://github.com/Akshar2106/web322-app
 ***************************************************************/
 require('dotenv').config();
@@ -16,10 +16,14 @@ const streamifier = require('streamifier');
 const storeService = require('./store-service');
 const Handlebars = require('handlebars');
 const methodOverride = require('method-override');
+const authData = require("./auth-service");
+const clientSessions = require("client-sessions");
+const exphbs = require('express-handlebars');
+
+const HTTP_PORT = process.env.PORT || 8080;
 
 const app = express();
 const upload = multer();
-const exphbs = require('express-handlebars');
 
 app.engine('.hbs', exphbs.engine({
   extname: '.hbs',
@@ -48,13 +52,35 @@ app.engine('.hbs', exphbs.engine({
       let year = dateObj.getFullYear();
       let month = (dateObj.getMonth() + 1).toString();
       let day = dateObj.getDate().toString();
-      return `${year}-${month.padStart(2, '0')}-${day.padStart(2,'0')}`;
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
     }
   }
 }));
 
 app.set('view engine', '.hbs');
 app.set('views', path.join(__dirname, 'views'));
+
+app.use(
+  clientSessions({
+    cookieName: "session",
+    secret: "Sessions",
+    duration: 24 * 60 * 60 * 1000, 
+    activeDuration: 30 * 60 * 1000, 
+  })
+);
+
+app.use((req, res, next) => {
+  res.locals.session = req.session;
+  next();
+});
+
+function ensureLogin(req, res, next) {
+  if (!req.session.user) {
+    res.redirect("/login");
+  } else {
+    next();
+  }
+}
 
 cloudinary.config({
   cloud_name: "doszlj5lf",
@@ -71,12 +97,28 @@ app.use(function(req, res, next) {
   next();
 });
 
+function ensureLogin(req, res, next) {
+  if (!req.session || !req.session.user) {
+    res.redirect("/login");
+  } else {
+    next();
+  }
+}
+
+
 app.get('/', (req, res) => {
   res.redirect('/shop');
 });
 
 app.get('/about', (req, res) => {
   res.render('about');
+});
+app.get('/login', (req, res) => {
+  res.render('login');
+});
+
+app.get('/register', (req, res) => {
+  res.render('register');
 });
 
 app.get('/items/add', (req, res) => {
@@ -234,13 +276,102 @@ app.get('/items/delete/:id', (req, res) => {
     });
 });
 
-storeService.initialize()
+app.get("/login", (req, res) => {
+  try {
+    res.render("login");
+  } catch (err) {
+    console.error("Error rendering login page:", err);
+    res.status(500).send("Server error");
+  }
+});
+
+app.get("/register", (req, res) => {
+  try {
+    res.render("register");
+  } catch (err) {
+    console.error("Error rendering register page:", err);
+    res.status(500).send("Server error");
+  }
+});
+
+app.post("/register", async (req, res) => {
+  console.log("Request body:", req.body);
+
+  if (!req.body || !req.body.userName || !req.body.password) {
+    return res.status(400).render("register", { 
+      errorMessage: "Both userName and password are required", 
+      userName: req.body ? req.body.userName : '' 
+    });
+  }
+
+  const { userName, password } = req.body;
+
+  try {
+    await authData.registerUser(req.body);
+    res.render("register", { successMessage: "User created", userName });
+  } catch (err) {
+    console.error("Registration error:", err);
+    res.render("register", { 
+      errorMessage: err.message || 'An error occurred', 
+      userName 
+    });
+  }
+});
+
+app.use((req, res, next) => {
+  console.log("Session Debug - req.session:", req.session);
+  next();
+});
+
+app.post("/login", async (req, res) => {
+  req.body.userAgent = req.get("User-Agent");
+
+  console.log("Session before login:", req.session);
+
+  if (!req.session) {
+    console.error("Session not initialized");
+    return res.status(500).render("login", {
+      errorMessage: "Session not initialized. Please refresh and try again.",
+    });
+  }
+
+  try {
+    const user = await authData.checkUser(req.body);
+    req.session.user = {
+      userName: user.userName,
+      email: user.email,
+      loginHistory: user.loginHistory,
+    };
+
+    res.redirect("/items");
+  } catch (err) {
+    console.error("Login error:", err);
+    res.render("login", { errorMessage: err.message || "An error occurred." });
+  }
+});
+
+app.get("/logout", (req, res) => {
+  req.session.reset(); 
+  res.redirect("/");
+});
+
+app.get("/userHistory", ensureLogin, (req, res) => {
+  res.render("userHistory");
+});
+
+app.use((req, res) => {
+  res.status(404).render("404");
+});
+
+
+storeService
+  .initialize()
+  .then(authData.initialize)
   .then(() => {
-    const PORT = process.env.PORT || 8080;
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
+    app.listen(HTTP_PORT, () => {
+      console.log(`Server is running on port ${HTTP_PORT}`);
     });
   })
   .catch((err) => {
-    console.error("Failed to initialize data:", err);
+    console.error("Unable to start server:", err);
   });
