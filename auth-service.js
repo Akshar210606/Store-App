@@ -1,7 +1,6 @@
-//mongodb+srv://aksharpatel883:BbrtC5pN091w08mv@cluster0.f6ecp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-
-const bcrypt = require('bcryptjs');
+require('dotenv').config();
 const mongoose = require("mongoose");
+const bcrypt = require('bcryptjs');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
@@ -20,9 +19,9 @@ let User;
 
 module.exports.initialize = function () {
   return new Promise((resolve, reject) => {
-    const db = mongoose.createConnection(
-      "mongodb+srv://aksharpatel883:BbrtC5pN091w08mv@cluster0.f6ecp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-    );
+    const db = mongoose.createConnection(process.env.MONGODB_URI, {
+});
+
 
     db.on("error", (err) => {
       console.error("Database connection error:", err);

@@ -1,7 +1,7 @@
 {
-  "name": "web322-app",
+  "name": "Store",
   "version": "1.0.0",
-  "description": "assignment 2",
+  "description": "A Node.js web app with user authentication, product listing, and Cloudinary image uploads.",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -13,7 +13,7 @@
     "bcryptjs": "^2.4.3",
     "client-sessions": "^0.8.0",
     "cloudinary": "^2.5.1",
-    "dotenv": "^16.4.7",
+    "dotenv": "^16.6.1",
     "express": "^4.21.0",
     "express-handlebars": "^8.0.1",
     "handlebars": "^4.7.8",

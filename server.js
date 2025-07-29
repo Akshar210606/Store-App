@@ -1,11 +1,4 @@
-/************************************************************* 
- * WEB 322 - ASSIGNMENT 6
- * Name: Aksharkumar Anilkumar Patel
- * Student Id: 137902235
- * Date: 10/12/2024
- * Replit URL:
- * Github link: https://github.com/Akshar2106/web322-app
-***************************************************************/
+
 require('dotenv').config();
 
 const express = require('express');
